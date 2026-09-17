@@ -15,3 +15,5 @@ class Topic(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     contents = relationship("LearningContent", back_populates="topic", cascade="all, delete-orphan")
+    quizzes = relationship("Quiz", back_populates="topic", cascade="all, delete-orphan")
+

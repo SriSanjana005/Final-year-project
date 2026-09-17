@@ -5,10 +5,10 @@ import {
   Sparkles, History, User, Users, FolderKanban, 
   FileText, HelpCircle as QuestionIcon, Network, Cpu
 } from 'lucide-react';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 export function Sidebar() {
-  const user = authService.getCurrentUser();
+  const { user } = useAuth();
   const role = user?.role || 'child';
 
   const childLinks = [
@@ -72,7 +72,6 @@ export function Sidebar() {
         </nav>
       </div>
 
-      {/* AI Integration status preview */}
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
           <Cpu size={14} className="text-[#2563EB]" />

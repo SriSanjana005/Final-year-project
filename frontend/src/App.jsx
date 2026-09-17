@@ -1,9 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Common Pages
 import { LandingPage } from './pages/LandingPage';
-import { LoginPage } from './pages/LoginPage';
+import { LoginPage } from './pages/auth/LoginPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Child Pages
@@ -34,41 +36,49 @@ import { QuestionManagementPage } from './pages/admin/QuestionManagementPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Common Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
-        {/* Child Routes */}
-        <Route path="/child/dashboard" element={<ChildDashboard />} />
-        <Route path="/child/content" element={<LearningContentPage />} />
-        <Route path="/child/quiz" element={<QuizPage />} />
-        <Route path="/child/quiz-result" element={<QuizResultPage />} />
-        <Route path="/child/progress" element={<ProgressPage />} />
-        <Route path="/child/recommendations" element={<RecommendationsPage />} />
-        <Route path="/child/history" element={<LearningHistoryPage />} />
-        <Route path="/child/profile" element={<ChildProfilePage />} />
+          {/* Child Protected Routes */}
+          <Route path="/child/dashboard" element={<ProtectedRoute allowedRoles={['child']}><ChildDashboard /></ProtectedRoute>} />
+          <Route path="/child/content" element={<ProtectedRoute allowedRoles={['child']}><LearningContentPage /></ProtectedRoute>} />
+          <Route path="/child/learning" element={<ProtectedRoute allowedRoles={['child']}><LearningContentPage /></ProtectedRoute>} />
+          <Route path="/child/quiz" element={<ProtectedRoute allowedRoles={['child']}><QuizPage /></ProtectedRoute>} />
+          <Route path="/child/quiz-result" element={<ProtectedRoute allowedRoles={['child']}><QuizResultPage /></ProtectedRoute>} />
+          <Route path="/child/result" element={<ProtectedRoute allowedRoles={['child']}><QuizResultPage /></ProtectedRoute>} />
+          <Route path="/child/progress" element={<ProtectedRoute allowedRoles={['child']}><ProgressPage /></ProtectedRoute>} />
+          <Route path="/child/recommendations" element={<ProtectedRoute allowedRoles={['child']}><RecommendationsPage /></ProtectedRoute>} />
+          <Route path="/child/history" element={<ProtectedRoute allowedRoles={['child']}><LearningHistoryPage /></ProtectedRoute>} />
+          <Route path="/child/profile" element={<ProtectedRoute allowedRoles={['child']}><ChildProfilePage /></ProtectedRoute>} />
 
-        {/* Parent Routes */}
-        <Route path="/parent/dashboard" element={<ParentDashboard />} />
-        <Route path="/parent/child-progress" element={<ChildProgressPage />} />
-        <Route path="/parent/child-performance" element={<ChildPerformancePage />} />
-        <Route path="/parent/child-history" element={<ChildLearningHistoryPage />} />
-        <Route path="/parent/profile" element={<ParentProfilePage />} />
+          {/* Parent Protected Routes */}
+          <Route path="/parent/dashboard" element={<ProtectedRoute allowedRoles={['parent']}><ParentDashboard /></ProtectedRoute>} />
+          <Route path="/parent/child-progress" element={<ProtectedRoute allowedRoles={['parent']}><ChildProgressPage /></ProtectedRoute>} />
+          <Route path="/parent/progress" element={<ProtectedRoute allowedRoles={['parent']}><ChildProgressPage /></ProtectedRoute>} />
+          <Route path="/parent/child-performance" element={<ProtectedRoute allowedRoles={['parent']}><ChildPerformancePage /></ProtectedRoute>} />
+          <Route path="/parent/performance" element={<ProtectedRoute allowedRoles={['parent']}><ChildPerformancePage /></ProtectedRoute>} />
+          <Route path="/parent/child-history" element={<ProtectedRoute allowedRoles={['parent']}><ChildLearningHistoryPage /></ProtectedRoute>} />
+          <Route path="/parent/history" element={<ProtectedRoute allowedRoles={['parent']}><ChildLearningHistoryPage /></ProtectedRoute>} />
+          <Route path="/parent/profile" element={<ProtectedRoute allowedRoles={['parent']}><ParentProfilePage /></ProtectedRoute>} />
 
-        {/* Admin Routes */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/users" element={<UserManagementPage />} />
-        <Route path="/admin/mapping" element={<ParentChildMappingPage />} />
-        <Route path="/admin/topics" element={<TopicManagementPage />} />
-        <Route path="/admin/content" element={<ContentManagementPage />} />
-        <Route path="/admin/quizzes" element={<QuizManagementPage />} />
-        <Route path="/admin/questions" element={<QuestionManagementPage />} />
+          {/* Admin Protected Routes */}
+          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><UserManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/mapping" element={<ProtectedRoute allowedRoles={['admin']}><ParentChildMappingPage /></ProtectedRoute>} />
+          <Route path="/admin/mappings" element={<ProtectedRoute allowedRoles={['admin']}><ParentChildMappingPage /></ProtectedRoute>} />
+          <Route path="/admin/topics" element={<ProtectedRoute allowedRoles={['admin']}><TopicManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/content" element={<ProtectedRoute allowedRoles={['admin']}><ContentManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/quizzes" element={<ProtectedRoute allowedRoles={['admin']}><QuizManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/questions" element={<ProtectedRoute allowedRoles={['admin']}><QuestionManagementPage /></ProtectedRoute>} />
 
-        {/* Catch-all 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Catch-all 404 Route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

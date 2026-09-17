@@ -1,14 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Sparkles, BookOpen, ShieldCheck } from 'lucide-react';
-import { authService } from '../../services/authService';
+import { LogOut, Sparkles, BookOpen, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export function Navbar() {
   const navigate = useNavigate();
-  const user = authService.getCurrentUser();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    authService.logout();
+    logout();
     navigate('/login');
   };
 
@@ -41,15 +41,15 @@ export function Navbar() {
         {user && (
           <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg">
             <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">
-              {user.full_name?.charAt(0) || 'U'}
+              {user.name?.charAt(0) || user.full_name?.charAt(0) || 'U'}
             </div>
             <div className="text-left hidden md:block">
-              <p className="text-xs font-semibold text-slate-800 leading-none">{user.full_name}</p>
+              <p className="text-xs font-semibold text-slate-800 leading-none">{user.name || user.full_name}</p>
               <div className="mt-1">{getRoleBadge(user.role)}</div>
             </div>
             <button 
               onClick={handleLogout}
-              className="ml-2 text-slate-400 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-slate-200"
+              className="ml-2 text-slate-400 hover:text-red-600 transition-colors p-1.5 rounded-md hover:bg-slate-200 cursor-pointer"
               title="Logout"
               aria-label="Logout"
             >

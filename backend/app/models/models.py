@@ -1,27 +1,8 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, Float, JSON, Enum
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateTime, Float, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
-import enum
 from app.db.database import Base
-
-class UserRole(str, enum.Enum):
-    CHILD = "child"
-    PARENT = "parent"
-    ADMIN = "admin"
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_order=True, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(255), nullable=False)
-    full_name = Column(String(255), nullable=False)
-    role = Column(String(50), default=UserRole.CHILD.value, nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    child_profile = relationship("ChildProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
-    parent_profile = relationship("ParentProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
+from app.models.user import User, UserRole
 
 class ChildProfile(Base):
     __tablename__ = "child_profiles"
@@ -80,7 +61,7 @@ class LearningContent(Base):
     title = Column(String(255), nullable=False)
     content_body = Column(Text, nullable=False)
     media_url = Column(String(500), nullable=True)
-    difficulty_level = Column(Integer, default=1)  # 1: Easy, 2: Medium, 3: Advanced
+    difficulty_level = Column(Integer, default=1)
     estimated_minutes = Column(Integer, default=5)
     is_approved = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -107,7 +88,7 @@ class Question(Base):
     id = Column(Integer, primary_key=True, index=True)
     quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
     question_text = Column(Text, nullable=False)
-    options = Column(JSON, nullable=False)  # List of strings
+    options = Column(JSON, nullable=False)
     correct_option_index = Column(Integer, nullable=False)
     explanation = Column(Text, nullable=True)
     difficulty_level = Column(Integer, default=1)
@@ -137,7 +118,7 @@ class LearningHistory(Base):
     content_id = Column(Integer, ForeignKey("learning_contents.id"), nullable=True)
     topic_title = Column(String(255), nullable=False)
     difficulty_level = Column(Integer, default=1)
-    activity_type = Column(String(50), default="content_read") # content_read, quiz_completed
+    activity_type = Column(String(50), default="content_read")
     score = Column(Float, nullable=True)
     time_spent_seconds = Column(Integer, default=0)
     status = Column(String(50), default="completed")
@@ -151,8 +132,8 @@ class Recommendation(Base):
     id = Column(Integer, primary_key=True, index=True)
     child_id = Column(Integer, ForeignKey("child_profiles.id"), nullable=False)
     content_id = Column(Integer, ForeignKey("learning_contents.id"), nullable=False)
-    recommended_by = Column(String(50), default="RuleEngine/Placeholder") # Will be 'Transformer+PPO' in future
-    action_type = Column(String(50), default="same_difficulty") # 0: review, 1: easier, 2: same, 3: harder, 4: practice
+    recommended_by = Column(String(50), default="RuleEngine/Placeholder")
+    action_type = Column(String(50), default="same_difficulty")
     confidence_score = Column(Float, default=0.85)
     is_completed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)

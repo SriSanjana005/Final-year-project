@@ -24,4 +24,6 @@ frontend/.env.local
 ml/models/*.pt
 ml/models/*.pth
 ml/models/*.bin
+ml/models/*.zip
+
 

@@ -16,12 +16,23 @@ class RecommendationService:
     @staticmethod
     def generate_recommendation(db: Session, child_id: int, N: int = RECENT_ATTEMPTS_N) -> Optional[Recommendation]:
         """
-        Generates an explainable rule-based recommendation baseline for a given child.
+        Generates recommendation using Transformer + PPO DRL strategy when available,
+        falling back to Rule-Based Baseline strategy for cold-start or when DRL checkpoint is absent.
         """
-        # 1. Verify child exists
+        # 1. Try Transformer + PPO DRL Strategy
+        try:
+            from app.services.rl_recommendation_service import RLRecommendationService
+            ppo_rec = RLRecommendationService.generate_ppo_recommendation(db, child_id)
+            if ppo_rec:
+                return ppo_rec
+        except Exception as e:
+            print(f"Notice: Transformer+PPO strategy fallback to Rule-Based: {e}")
+
+        # 2. Fallback: Rule-Based Baseline Strategy
         child = db.query(ChildProfile).filter(ChildProfile.id == child_id).first()
         if not child:
             return None
+
 
         # 2. Retrieve child's recent completed quiz attempts
         attempts = (

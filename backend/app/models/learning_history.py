@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.database import Base
@@ -15,6 +15,7 @@ class LearningHistory(Base):
     score = Column(Float, nullable=True) # percentage
     completion_status = Column(String(50), default="completed", nullable=False)
     time_spent = Column(Integer, default=0, nullable=False) # seconds
+    is_test_data = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     child = relationship("ChildProfile", back_populates="learning_histories")

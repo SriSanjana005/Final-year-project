@@ -1,5 +1,5 @@
 # Experimental Evaluation & Recommendation Strategy Report
-**Generated Date**: `2026-09-17 19:34:24 UTC` | **Dataset Version**: `1.0.0` | **Random Seed**: `42`
+**Generated Date**: `2026-09-17 19:44:09 UTC` | **Dataset Version**: `1.0.0` | **Random Seed**: `42`
 
 ---
 
@@ -16,30 +16,30 @@ Neutral side-by-side presentation of actual recorded metrics for Rule-Based Base
 
 | Metric Name | Rule-Based Baseline | Transformer + PPO System | Measurement Unit |
 |---|---|---|---|
-| **Recommendations Generated** | `2` | `0` | Count |
-| **Learners Represented** | `1` | `0` | Count |
-| **Recommendation View Rate** | `0.0%` | `N/A — Insufficient data` | % |
-| **Recommendation Completion Rate** | `0.0%` | `N/A — Insufficient data` | % |
-| **Repeated Content Rate** | `50.0%` | `N/A — Insufficient data` | % |
-| **Difficulty Alignment Rate** | `100.0%` | `N/A — Insufficient data` | % |
-| **Avg Subsequent Quiz Score** | `N/A — Insufficient data` | `None` | % |
-| **Avg Performance Change (Score Diff)** | `N/A — Insufficient data` | `None` | Percentage Points |
+| **Recommendations Generated** | `1` | `1` | Count |
+| **Learners Represented** | `1` | `1` | Count |
+| **Recommendation View Rate** | `100.0%` | `100.0%` | % |
+| **Recommendation Completion Rate** | `100.0%` | `0.0%` | % |
+| **Repeated Content Rate** | `0.0%` | `0.0%` | % |
+| **Difficulty Alignment Rate** | `100.0%` | `100.0%` | % |
+| **Avg Subsequent Quiz Score** | `N/A — Insufficient data` | `N/A — Insufficient data` | % |
+| **Avg Performance Change (Score Diff)** | `N/A — Insufficient data` | `N/A — Insufficient data` | Percentage Points |
 
 ## 3. Rule-Based Baseline Evaluation
-- **Recommendations**: `2`
+- **Recommendations**: `1`
 - **Learners**: `1`
-- **View Rate**: `0.0%`
-- **Completion Rate**: `0.0%`
-- **Repeated Content Rate**: `50.0%`
+- **View Rate**: `100.0%`
+- **Completion Rate**: `100.0%`
+- **Repeated Content Rate**: `0.0%`
 - **Difficulty Alignment Rate**: `100.0%`
 
 ## 4. Transformer + PPO Proposed Evaluation
-- **Recommendations**: `0`
-- **Learners**: `0`
-- **View Rate**: `N/A — Insufficient data%`
-- **Completion Rate**: `N/A — Insufficient data%`
-- **Repeated Content Rate**: `N/A — Insufficient data%`
-- **Difficulty Alignment Rate**: `N/A — Insufficient data%`
+- **Recommendations**: `1`
+- **Learners**: `1`
+- **View Rate**: `100.0%`
+- **Completion Rate**: `0.0%`
+- **Repeated Content Rate**: `0.0%`
+- **Difficulty Alignment Rate**: `100.0%`
 
 ## 5. Experimental Limitations & Research Notes
 1. **Observational Data Boundaries**: All metrics reflect actual database interaction records.

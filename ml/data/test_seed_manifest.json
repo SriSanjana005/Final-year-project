@@ -1,0 +1,26 @@
+{
+  "seed_version": "1.0.0",
+  "seed_value": 42,
+  "creation_timestamp": "2026-09-17T19:44:14.740187",
+  "test_users": [
+    "test.parent@example.com",
+    "test.child.low@example.com",
+    "test.child.medium@example.com",
+    "test.child.high@example.com",
+    "test.child.cold@example.com",
+    "test.child.mixed@example.com"
+  ],
+  "number_of_learners": 5,
+  "total_learning_interactions": 66,
+  "total_quiz_attempts": 66,
+  "total_answers": 330,
+  "topics_used": [
+    "Addition",
+    "Subtraction",
+    "Vocabulary & Reading",
+    "Animals & Nature"
+  ],
+  "published_content_count": 36,
+  "cold_start_learners": 1,
+  "ai_eligible_learners": 4
+}

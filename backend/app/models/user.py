@@ -18,6 +18,7 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(SQLEnum(UserRole), nullable=False, default=UserRole.CHILD)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_test_data = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 

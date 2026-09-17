@@ -1,6 +1,6 @@
 {
   "evaluation_status": "completed",
-  "timestamp": "2026-09-17T19:34:24.297616",
+  "timestamp": "2026-09-17T19:44:09.723524",
   "dataset_version": "1.0.0",
   "content_safety_audit": {
     "total_recommendations": 2,
@@ -9,13 +9,13 @@
     "integrity_passed": true
   },
   "baseline_metrics": {
-    "total_recommendations": 2,
+    "total_recommendations": 1,
     "total_learners": 1,
-    "viewed_count": 0,
-    "completed_count": 0,
-    "view_rate": 0.0,
-    "completion_rate": 0.0,
-    "repeated_content_rate": 50.0,
+    "viewed_count": 1,
+    "completed_count": 1,
+    "view_rate": 100.0,
+    "completion_rate": 100.0,
+    "repeated_content_rate": 0.0,
     "difficulty_alignment_rate": 100.0,
     "subsequent_score_stats": {
       "mean": "N/A \u2014 Insufficient data",
@@ -34,63 +34,77 @@
     "strategy_name": "Rule-Based Baseline"
   },
   "proposed_metrics": {
-    "total_recommendations": 0,
-    "total_learners": 0,
-    "view_rate": "N/A \u2014 Insufficient data",
-    "completion_rate": "N/A \u2014 Insufficient data",
-    "avg_subsequent_score": "N/A \u2014 Insufficient data",
-    "avg_performance_change": "N/A \u2014 Insufficient data",
-    "repeated_content_rate": "N/A \u2014 Insufficient data",
-    "difficulty_alignment_rate": "N/A \u2014 Insufficient data",
+    "total_recommendations": 1,
+    "total_learners": 1,
+    "viewed_count": 1,
+    "completed_count": 0,
+    "view_rate": 100.0,
+    "completion_rate": 0.0,
+    "repeated_content_rate": 0.0,
+    "difficulty_alignment_rate": 100.0,
+    "subsequent_score_stats": {
+      "mean": "N/A \u2014 Insufficient data",
+      "std": null,
+      "ci_lower": null,
+      "ci_upper": null,
+      "sample_size": 0
+    },
+    "performance_change_stats": {
+      "mean": "N/A \u2014 Insufficient data",
+      "std": null,
+      "ci_lower": null,
+      "ci_upper": null,
+      "sample_size": 0
+    },
     "strategy_name": "Transformer + PPO System"
   },
   "comparison_matrix": [
     {
       "metric_name": "Recommendations Generated",
-      "rule_based": "2",
-      "transformer_ppo": "0",
+      "rule_based": "1",
+      "transformer_ppo": "1",
       "unit": "Count"
     },
     {
       "metric_name": "Learners Represented",
       "rule_based": "1",
-      "transformer_ppo": "0",
+      "transformer_ppo": "1",
       "unit": "Count"
     },
     {
       "metric_name": "Recommendation View Rate",
-      "rule_based": "0.0%",
-      "transformer_ppo": "N/A \u2014 Insufficient data",
+      "rule_based": "100.0%",
+      "transformer_ppo": "100.0%",
       "unit": "%"
     },
     {
       "metric_name": "Recommendation Completion Rate",
-      "rule_based": "0.0%",
-      "transformer_ppo": "N/A \u2014 Insufficient data",
+      "rule_based": "100.0%",
+      "transformer_ppo": "0.0%",
       "unit": "%"
     },
     {
       "metric_name": "Repeated Content Rate",
-      "rule_based": "50.0%",
-      "transformer_ppo": "N/A \u2014 Insufficient data",
+      "rule_based": "0.0%",
+      "transformer_ppo": "0.0%",
       "unit": "%"
     },
     {
       "metric_name": "Difficulty Alignment Rate",
       "rule_based": "100.0%",
-      "transformer_ppo": "N/A \u2014 Insufficient data",
+      "transformer_ppo": "100.0%",
       "unit": "%"
     },
     {
       "metric_name": "Avg Subsequent Quiz Score",
       "rule_based": "N/A \u2014 Insufficient data",
-      "transformer_ppo": "None",
+      "transformer_ppo": "N/A \u2014 Insufficient data",
       "unit": "%"
     },
     {
       "metric_name": "Avg Performance Change (Score Diff)",
       "rule_based": "N/A \u2014 Insufficient data",
-      "transformer_ppo": "None",
+      "transformer_ppo": "N/A \u2014 Insufficient data",
       "unit": "Percentage Points"
     }
   ]

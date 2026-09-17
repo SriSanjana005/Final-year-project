@@ -17,6 +17,7 @@ class QuizAttempt(Base):
     attempt_number = Column(Integer, default=1, nullable=False)
     started_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     completed_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    is_test_data = Column(Boolean, default=False, nullable=False)
 
     quiz = relationship("Quiz", back_populates="attempts")
     child = relationship("ChildProfile", back_populates="quiz_attempts")

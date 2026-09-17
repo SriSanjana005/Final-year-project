@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Boolean, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.database import Base
@@ -15,6 +15,7 @@ class Recommendation(Base):
     recommendation_type = Column(String(50), default="rule_based", nullable=False)
     status = Column(String(50), default="recommended", nullable=False) # recommended, viewed, completed, dismissed
     avg_score = Column(Float, nullable=True)
+    is_test_data = Column(Boolean, default=False, nullable=False)
     generated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 

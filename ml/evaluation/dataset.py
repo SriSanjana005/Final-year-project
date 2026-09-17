@@ -41,6 +41,8 @@ class EvaluationDatasetExtractor:
 
         try:
             recs = db.query(Recommendation).order_by(Recommendation.generated_at.asc()).all()
+            # Exclude development test data from official FYP research evaluation metrics
+            recs = [r for r in recs if not getattr(r, 'is_test_data', False)]
             total_recs = len(recs)
 
             for r in recs:

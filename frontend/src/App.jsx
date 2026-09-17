@@ -34,6 +34,7 @@ import { TopicManagementPage } from './pages/admin/TopicManagementPage';
 import { ContentManagementPage } from './pages/admin/ContentManagementPage';
 import { QuizManagementPage } from './pages/admin/QuizManagementPage';
 import { QuestionManagementPage } from './pages/admin/QuestionManagementPage';
+import { RecommendationMonitoringPage } from './pages/admin/RecommendationMonitoringPage';
 
 export default function App() {
   return (
@@ -78,6 +79,8 @@ export default function App() {
           <Route path="/admin/content" element={<ProtectedRoute allowedRoles={['admin']}><ContentManagementPage /></ProtectedRoute>} />
           <Route path="/admin/quizzes" element={<ProtectedRoute allowedRoles={['admin']}><QuizManagementPage /></ProtectedRoute>} />
           <Route path="/admin/questions" element={<ProtectedRoute allowedRoles={['admin']}><QuestionManagementPage /></ProtectedRoute>} />
+          <Route path="/admin/recommendations" element={<ProtectedRoute allowedRoles={['admin']}><RecommendationMonitoringPage /></ProtectedRoute>} />
+
 
           {/* Catch-all 404 Route */}
           <Route path="*" element={<NotFoundPage />} />

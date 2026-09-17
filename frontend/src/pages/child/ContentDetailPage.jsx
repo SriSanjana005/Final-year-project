@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/ca
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { contentService } from '../../services/contentService';
+import { recommendationService } from '../../services/recommendationService';
 import { ArrowLeft, CheckCircle, Clock, BookOpen, Sparkles } from 'lucide-react';
 
 export function ContentDetailPage() {
@@ -29,6 +30,18 @@ export function ContentDetailPage() {
     };
     fetchContent();
   }, [contentId]);
+
+  const handleMarkCompleted = async () => {
+    setCompleted(true);
+    try {
+      const currentRec = await recommendationService.getCurrentRecommendation();
+      if (currentRec && currentRec.content_id === parseInt(contentId)) {
+        await recommendationService.markCompleted(currentRec.id);
+      }
+    } catch (err) {
+      console.log("Completed content update log.");
+    }
+  };
 
   return (
     <AppLayout>
@@ -88,7 +101,7 @@ export function ContentDetailPage() {
                 variant={completed ? "success" : "primary"}
                 size="lg" 
                 className="gap-2 w-full sm:w-auto font-semibold"
-                onClick={() => setCompleted(true)}
+                onClick={handleMarkCompleted}
               >
                 {completed ? (
                   <>
@@ -107,3 +120,4 @@ export function ContentDetailPage() {
     </AppLayout>
   );
 }
+

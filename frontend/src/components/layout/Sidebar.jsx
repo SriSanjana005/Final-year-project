@@ -37,6 +37,7 @@ export function Sidebar() {
     { to: '/admin/content', label: 'Educational Content', icon: FileText },
     { to: '/admin/quizzes', label: 'Quiz Management', icon: HelpCircle },
     { to: '/admin/questions', label: 'Question Bank', icon: QuestionIcon },
+    { to: '/admin/recommendations', label: 'Recommendations Baseline', icon: Sparkles },
   ];
 
   const links = role === 'admin' ? adminLinks : role === 'parent' ? parentLinks : childLinks;

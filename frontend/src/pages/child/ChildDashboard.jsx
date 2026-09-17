@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card';
@@ -6,11 +6,28 @@ import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
 import { Badge } from '../../components/ui/badge';
 import { useAuth } from '../../context/AuthContext';
-import { Play, Sparkles, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { recommendationService } from '../../services/recommendationService';
+import { Play, Sparkles, Award, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 
 export function ChildDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [currentRec, setCurrentRec] = useState(null);
+  const [loadingRec, setLoadingRec] = useState(true);
+
+  useEffect(() => {
+    const fetchRec = async () => {
+      try {
+        const data = await recommendationService.getCurrentRecommendation();
+        setCurrentRec(data);
+      } catch (err) {
+        console.error("Failed to load dashboard recommendation:", err);
+      } finally {
+        setLoadingRec(false);
+      }
+    };
+    fetchRec();
+  }, []);
 
   return (
     <AppLayout>
@@ -23,7 +40,7 @@ export function ChildDashboard() {
                 Welcome back, {user?.name || 'Learner'}! 👋
               </span>
               <h1 className="text-2xl md:text-3xl font-bold">Ready to continue your learning adventure?</h1>
-              <p className="text-blue-100 text-sm">You are doing great! You have completed 3 activities this week.</p>
+              <p className="text-blue-100 text-sm">Adaptive rule-based learning modules ready for you today.</p>
             </div>
             
             <div className="bg-white/10 backdrop-blur-xs p-4 rounded-xl border border-white/20 w-full md:w-72 space-y-2">
@@ -41,27 +58,21 @@ export function ChildDashboard() {
           <Card className="border-l-4 border-l-[#2563EB]">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <Badge variant="default">Current Topic</Badge>
-                <span className="text-xs text-slate-400">Mathematics</span>
+                <Badge variant="default">Learning Library</Badge>
+                <span className="text-xs text-slate-400">All Topics</span>
               </div>
-              <CardTitle className="text-lg pt-1">Addition & Subtraction with Visual Counters</CardTitle>
-              <CardDescription>Lesson 3: Adding 2-digit numbers using visual blocks</CardDescription>
+              <CardTitle className="text-lg pt-1">Explore Approved Content</CardTitle>
+              <CardDescription>Browse all lessons and visual learning materials</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs text-slate-600 font-medium">
-                  <span>Topic Progress</span>
-                  <span>75%</span>
-                </div>
-                <Progress value={75} color="bg-[#2563EB]" />
-              </div>
+              <p className="text-xs text-slate-600">Access curated reading, math, and visual recognition exercises.</p>
               <Button 
                 variant="primary" 
                 size="lg" 
-                className="w-full gap-2" 
+                className="w-full gap-2 font-bold" 
                 onClick={() => navigate('/child/content')}
               >
-                <Play size={18} /> Continue Learning
+                <Play size={18} /> Browse Content
               </Button>
             </CardContent>
           </Card>
@@ -70,24 +81,36 @@ export function ChildDashboard() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <Badge variant="success" className="gap-1">
-                  <Sparkles size={12} /> AI Recommended
+                  <Sparkles size={12} /> Recommended For You
                 </Badge>
-                <span className="text-xs font-medium text-teal-700">Confidence: 94%</span>
+                <span className="text-xs font-medium text-teal-700 capitalize">
+                  {currentRec?.difficulty || 'easy'}
+                </span>
               </div>
-              <CardTitle className="text-lg pt-1">Practice: Word & Object Matching</CardTitle>
-              <CardDescription>Tailored based on your recent visual recognition accuracy.</CardDescription>
+              <CardTitle className="text-lg pt-1">
+                {loadingRec ? "Loading recommendation..." : currentRec?.content_title || "Recommended Module"}
+              </CardTitle>
+              <CardDescription>
+                Topic: {currentRec?.topic_name || 'General'}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-xs text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
-                💡 <strong>Why this was recommended:</strong> Historical interaction sequence shows high retention when matching words with tactile pictures.
+                💡 <strong>Why this was recommended:</strong> {currentRec?.reason || "Based on your recent performance baseline."}
               </p>
               <Button 
                 variant="success" 
                 size="lg" 
-                className="w-full gap-2"
-                onClick={() => navigate('/child/recommendations')}
+                className="w-full gap-2 font-bold"
+                onClick={() => {
+                  if (currentRec) {
+                    navigate(`/child/learning/${currentRec.content_id}`);
+                  } else {
+                    navigate('/child/recommendations');
+                  }
+                }}
               >
-                Start Practice Activity <ArrowRight size={18} />
+                Start Recommended Activity <ArrowRight size={18} />
               </Button>
             </CardContent>
           </Card>

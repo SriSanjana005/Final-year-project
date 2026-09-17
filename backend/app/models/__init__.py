@@ -8,9 +8,11 @@ from app.models.quiz import Quiz
 from app.models.question import Question
 from app.models.quiz_attempt import QuizAttempt, Answer
 from app.models.learning_history import LearningHistory
+from app.models.recommendation import Recommendation
 
 __all__ = [
     "User", "UserRole", "ChildProfile", "ParentProfile", "ParentChild",
     "Topic", "LearningContent", "Quiz", "Question", "QuizAttempt",
-    "Answer", "LearningHistory"
+    "Answer", "LearningHistory", "Recommendation"
 ]
+

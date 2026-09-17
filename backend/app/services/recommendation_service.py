@@ -50,7 +50,8 @@ class RecommendationService:
                     "latest_attempt_time": att.completed_at
                 }
             if len(topic_attempts_map[t_id]["scores"]) < N:
-                topic_attempts_map[t_id]["scores"].append(att.percentage_score)
+                topic_attempts_map[t_id]["scores"].append(att.percentage)
+
 
         if not topic_attempts_map:
             return RecommendationService._handle_cold_start(db, child_id)
@@ -67,7 +68,8 @@ class RecommendationService:
             })
 
         # Sort by avg_score ascending, then by latest_attempt_time descending
-        sorted_topics.sort(key=lambda x: (x["avg_score"], desc(x["latest_attempt_time"])))
+        sorted_topics.sort(key=lambda x: (x["avg_score"], -x["latest_attempt_time"].timestamp()))
+
         selected_topic_info = sorted_topics[0]
         topic_id = selected_topic_info["topic_id"]
         avg_score = selected_topic_info["avg_score"]
@@ -100,7 +102,7 @@ class RecommendationService:
             # Fallback to any published content in the system
             content = (
                 db.query(LearningContent)
-                .filter(LearningContent.is_published == True, LearningContent.is_active == True)
+                .filter(LearningContent.is_published == True)
                 .first()
             )
             if not content:
@@ -130,14 +132,14 @@ class RecommendationService:
         """Cold-start strategy for learners with no performance history."""
         content = (
             db.query(LearningContent)
-            .filter(LearningContent.is_published == True, LearningContent.is_active == True)
+            .filter(LearningContent.is_published == True)
             .filter(LearningContent.difficulty == "easy")
             .first()
         )
         if not content:
             content = (
                 db.query(LearningContent)
-                .filter(LearningContent.is_published == True, LearningContent.is_active == True)
+                .filter(LearningContent.is_published == True)
                 .first()
             )
         if not content:
@@ -161,15 +163,14 @@ class RecommendationService:
     @staticmethod
     def _select_content(db: Session, child_id: int, topic_id: int, target_difficulty: str) -> Optional[LearningContent]:
         """
-        Selects published active content for topic and difficulty, avoiding completed repetition.
+        Selects published content for topic and difficulty, avoiding completed repetition.
         """
-        # Fetch published active candidate contents for topic and difficulty
+        # Fetch published candidate contents for topic and difficulty
         candidates = (
             db.query(LearningContent)
             .filter(
                 LearningContent.topic_id == topic_id,
                 LearningContent.is_published == True,
-                LearningContent.is_active == True,
                 LearningContent.difficulty == target_difficulty
             )
             .all()
@@ -181,11 +182,11 @@ class RecommendationService:
                 db.query(LearningContent)
                 .filter(
                     LearningContent.topic_id == topic_id,
-                    LearningContent.is_published == True,
-                    LearningContent.is_active == True
+                    LearningContent.is_published == True
                 )
                 .all()
             )
+
 
         if not candidates:
             return None

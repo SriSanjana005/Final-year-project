@@ -5,9 +5,11 @@ from app.core.config import settings
 # Engine configuration (fallbacks or sqlite in-memory for testing if mysql not connected yet)
 try:
     engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+    with engine.connect() as conn:
+        pass
 except Exception:
-    # fallback engine placeholder
     engine = create_engine("sqlite:///./fallback_test.db", connect_args={"check_same_thread": False})
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

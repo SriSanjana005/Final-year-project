@@ -7,6 +7,12 @@ class UserBase(BaseModel):
     email: EmailStr
     role: str
 
+class UserCreate(UserBase):
+    password: str
+    date_of_birth: Optional[str] = None
+    learning_level: Optional[str] = "beginner"
+    phone: Optional[str] = None
+
 class UserResponse(UserBase):
     id: int
     is_active: bool

@@ -30,6 +30,16 @@ export const userService = {
     return res.data;
   },
 
+  createUser: async (userData) => {
+    const res = await api.post('/users', userData);
+    return res.data;
+  },
+
+  deleteUser: async (userId) => {
+    const res = await api.delete(`/users/${userId}`);
+    return res.data;
+  },
+
   getChildren: async () => {
     const res = await api.get('/children');
     return res.data;

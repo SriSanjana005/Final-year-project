@@ -6,34 +6,8 @@ from app.models.user import User, UserRole
 from app.models.child import ChildProfile
 from app.models.parent import ParentProfile
 from app.models.parent_child import ParentChild
-
-class Topic(Base):
-    __tablename__ = "topics"
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-    category = Column(String(100), nullable=True)
-    icon_name = Column(String(50), default="book")
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    contents = relationship("LearningContent", back_populates="topic")
-    quizzes = relationship("Quiz", back_populates="topic")
-
-class LearningContent(Base):
-    __tablename__ = "learning_contents"
-
-    id = Column(Integer, primary_key=True, index=True)
-    topic_id = Column(Integer, ForeignKey("topics.id"), nullable=False)
-    title = Column(String(255), nullable=False)
-    content_body = Column(Text, nullable=False)
-    media_url = Column(String(500), nullable=True)
-    difficulty_level = Column(Integer, default=1)
-    estimated_minutes = Column(Integer, default=5)
-    is_approved = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    topic = relationship("Topic", back_populates="contents")
+from app.models.topic import Topic
+from app.models.content import LearningContent
 
 class Quiz(Base):
     __tablename__ = "quizzes"
@@ -45,7 +19,6 @@ class Quiz(Base):
     passing_percentage = Column(Integer, default=70)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    topic = relationship("Topic", back_populates="quizzes")
     questions = relationship("Question", back_populates="quiz", cascade="all, delete-orphan")
     attempts = relationship("QuizAttempt", back_populates="quiz")
 

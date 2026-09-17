@@ -21,7 +21,10 @@ class LearnerStateAdapter:
         Returns 68-dimensional NumPy float32 vector.
         """
         # Ensure representation is exactly 64 dims
-        rep = list(transformer_representation)
+        if isinstance(transformer_representation, (int, float)):
+            rep = [float(transformer_representation)] * 64
+        else:
+            rep = list(transformer_representation)
         if len(rep) < 64:
             rep = rep + [0.0] * (64 - len(rep))
         elif len(rep) > 64:

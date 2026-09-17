@@ -93,10 +93,12 @@ class AIRecommendationService:
             completion_rate = min(1.0, len(recent_attempts) / 5.0)
             recent_time_spent = 0.5  # Normalized time metric
 
+            learner_state_vector = learner_state_info.get("learner_state_vector") or [0.1] * 64
+
             # C. Construct 68-D RL State Vector
             adapter = LearnerStateAdapter()
             obs_vector = adapter.build_observation_vector(
-                transformer_representation=vector_mean,
+                transformer_representation=learner_state_vector,
                 recent_avg_score=recent_avg_score,
                 completion_rate=completion_rate,
                 recent_time_spent=recent_time_spent,

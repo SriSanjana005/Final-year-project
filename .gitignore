@@ -20,10 +20,13 @@ frontend/.env.local
 # Databases / Fallbacks
 *.db
 
-# ML Model Checkpoints
+# ML Model Checkpoints & Datasets
 ml/models/*.pt
 ml/models/*.pth
 ml/models/*.bin
 ml/models/*.zip
+ml/models/transformer/*.pt
+ml/models/ppo/*.zip
+ml/data/processed/
 
 

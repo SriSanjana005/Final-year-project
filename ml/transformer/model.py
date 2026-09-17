@@ -1,6 +1,15 @@
+import os
+import sys
 import torch
 import torch.nn as nn
-from app.models import child
+
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BACKEND_DIR = os.path.join(PROJECT_ROOT, "backend")
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
+
 from ml.transformer.config import TransformerConfig
 
 class LearnerTransformerEncoder(nn.Module):
@@ -50,7 +59,7 @@ class LearnerTransformerEncoder(nn.Module):
         comp_ids = batch["completion_ids"]        # [B, S]
         scores = batch["scores"].unsqueeze(-1)    # [B, S, 1]
         times = batch["time_spent"].unsqueeze(-1) # [B, S, 1]
-        padding_mask = batch["padding_mask"]      # [B, S] (True = padded)
+        padding_mask = batch.get("padding_mask", batch.get("attention_mask"))      # [B, S] (True = padded)
 
         batch_size, seq_len = topic_ids.shape
 

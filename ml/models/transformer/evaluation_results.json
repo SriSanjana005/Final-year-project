@@ -1,0 +1,33 @@
+{
+  "evaluation_status": "evaluated",
+  "timestamp": 1789673167.359778,
+  "test_samples": 1,
+  "metrics": {
+    "accuracy": 1.0,
+    "macro_precision": 0.3333,
+    "macro_recall": 0.3333,
+    "macro_f1": 0.3333,
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  },
+  "class_labels": {
+    "0": "LOW",
+    "1": "MEDIUM",
+    "2": "HIGH"
+  }
+}

@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../..
 import { Badge } from '../../components/ui/badge';
 import { recommendationService } from '../../services/recommendationService';
 import api from '../../services/api';
-import { Sparkles, Loader2, Cpu, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Sparkles, Loader2, Cpu, CheckCircle2, ShieldCheck, Database, Award, AlertCircle } from 'lucide-react';
 
 export function RecommendationMonitoringPage() {
   const [recommendations, setRecommendations] = useState([]);
@@ -45,15 +45,27 @@ export function RecommendationMonitoringPage() {
     }
   };
 
+  const formatStatusBadge = (statusStr) => {
+    if (statusStr === 'trained') {
+      return <Badge variant="success" className="gap-1"><CheckCircle2 size={12} /> Trained</Badge>;
+    } else if (statusStr === 'initialized') {
+      return <Badge variant="warning" className="gap-1"><Sparkles size={12} /> Initialized</Badge>;
+    }
+    return <Badge variant="neutral" className="gap-1"><AlertCircle size={12} /> Unavailable</Badge>;
+  };
+
+  const tDetails = aiStatus?.transformer_details || {};
+  const ppoDetails = aiStatus?.ppo_details || {};
+
   return (
     <AppLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Sparkles className="text-blue-600" /> Recommendation System Monitoring
+            <Sparkles className="text-blue-600" /> ML Model & Recommendation System Monitoring
           </h1>
           <p className="text-sm text-slate-500">
-            System audit log of generated recommendations and <strong>End-to-End AI Strategy Status</strong>.
+            Truthful system status audit of <strong>PyTorch Transformer & PPO RL Agent Pipeline</strong>.
           </p>
         </div>
 
@@ -61,39 +73,51 @@ export function RecommendationMonitoringPage() {
         <div className="bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-md">
           <div className="flex justify-between items-center border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
-              <Cpu size={18} /> Recommendation Strategy & AI Status Matrix
+              <Cpu size={18} /> Model Training & Dataset Status Matrix
             </div>
             <Badge variant="success" className="gap-1 bg-teal-500/20 text-teal-300 border-teal-500/30">
-              <ShieldCheck size={12} /> Active Strategy: {aiStatus?.global_configured_strategy || 'AUTO'}
+              <ShieldCheck size={12} /> Configured Strategy: {aiStatus?.global_configured_strategy || 'AUTO'}
             </Badge>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
-              <span className="text-slate-400 font-medium">Transformer Encoder (64-D)</span>
-              <p className="text-base font-extrabold flex items-center gap-1.5 text-emerald-400">
-                <CheckCircle2 size={16} /> Available
+            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-medium">Transformer Encoder (64-D)</span>
+                {formatStatusBadge(tDetails.status)}
+              </div>
+              <p className="text-xs text-slate-300">
+                Samples: <strong>{tDetails.train_samples || 0}</strong> | Acc: <strong>{tDetails.test_accuracy || 'N/A'}</strong>
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
-              <span className="text-slate-400 font-medium">PPO Agent Checkpoint</span>
-              <p className="text-base font-extrabold flex items-center gap-1.5 text-emerald-400">
-                <CheckCircle2 size={16} /> Available
+            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 font-medium">PPO RL Agent</span>
+                {formatStatusBadge(ppoDetails.status)}
+              </div>
+              <p className="text-xs text-slate-300">
+                Timesteps: <strong>{ppoDetails.total_timesteps || 0}</strong> | Reward: <strong>{ppoDetails.mean_reward || 'N/A'}</strong>
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
-              <span className="text-slate-400 font-medium">Cold-Start Threshold</span>
+            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2">
+              <span className="text-slate-400 font-medium flex items-center gap-1">
+                <Database size={14} className="text-amber-400" /> Database Interactions
+              </span>
               <p className="text-base font-extrabold text-amber-400">
-                {aiStatus?.min_required_interactions || 3} Interactions Min
+                {aiStatus?.interaction_count || 0} Records Recorded
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
-              <span className="text-slate-400 font-medium">Cold-Start Fallback</span>
-              <p className="text-base font-extrabold text-blue-400">
-                Rule-Based Engine
+            <div className="p-4 bg-slate-800/80 rounded-xl border border-slate-700 space-y-2">
+              <span className="text-slate-400 font-medium flex items-center gap-1">
+                <Award size={14} className="text-blue-400" /> Cold-Start Protocol
+              </span>
+              <p className="text-xs text-slate-300">
+                Threshold: <strong>{aiStatus?.min_required_interactions || 3} Interactions</strong>
+                <br />
+                Fallback: <strong>Rule-Based Baseline</strong>
               </p>
             </div>
           </div>
@@ -102,9 +126,9 @@ export function RecommendationMonitoringPage() {
         {/* Recommendation Stream */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Generated Recommendation Log Stream</CardTitle>
+            <CardTitle className="text-base">Generated Recommendation Audit Log Stream</CardTitle>
             <CardDescription>
-              Audit log of all recommendations created by Transformer+PPO AI Engine and Rule-Based Fallback Baseline.
+              Chronological log stream of recommendations generated across Transformer+PPO and Rule-Based Fallback.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,0 +1,15 @@
+{
+  "total_records": 2,
+  "valid_records": 2,
+  "invalid_records": 0,
+  "missing_child_ids": 0,
+  "missing_topic_ids": 0,
+  "invalid_difficulty_counts": 0,
+  "invalid_activity_type_counts": 0,
+  "impossible_score_counts": 0,
+  "negative_time_spent_counts": 0,
+  "duplicate_records": 0,
+  "children_represented": 1,
+  "topics_represented": 1,
+  "handling_strategy": "Invalid records are flagged and excluded from PyTorch training sequence tensors without artificial imputation."
+}

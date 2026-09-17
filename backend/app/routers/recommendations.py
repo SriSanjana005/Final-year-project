@@ -12,6 +12,7 @@ from app.models.content import LearningContent
 from app.models.topic import Topic
 from app.schemas.recommendation import RecommendationResponse, RecommendationAdminResponse
 from app.services.recommendation_service import RecommendationService
+from app.services.ai_availability_service import AIAvailabilityService
 
 router = APIRouter(prefix="/recommendations", tags=["Recommendations"])
 
@@ -56,6 +57,27 @@ def format_recommendation_response(db: Session, rec: Recommendation) -> dict:
         "generated_at": rec.generated_at
     }
 
+@router.get("/ai-status")
+def get_ai_status(
+    child_id: Optional[int] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Returns system-wide or child-specific AI availability metrics, cold-start status,
+    and recommendation strategy selection.
+    """
+    if current_user.role == UserRole.CHILD:
+        child_profile = db.query(ChildProfile).filter(ChildProfile.user_id == current_user.id).first()
+        target_child_id = child_profile.id if child_profile else 1
+    elif child_id:
+        verify_child_access(db, current_user, child_id)
+        target_child_id = child_id
+    else:
+        target_child_id = 1
+
+    return AIAvailabilityService.check_ai_status(db, target_child_id)
+
 @router.get("/current", response_model=RecommendationResponse)
 def get_current_recommendation(
     child_id: Optional[int] = Query(None),
@@ -64,7 +86,7 @@ def get_current_recommendation(
 ):
     """
     Returns the current active recommendation for the learner.
-    Generates a new rule-based baseline recommendation if none exists.
+    Does NOT generate duplicate recommendation records unnecessarily if an active ('recommended' or 'viewed') recommendation exists.
     """
     if current_user.role == UserRole.CHILD:
         child_profile = db.query(ChildProfile).filter(ChildProfile.user_id == current_user.id).first()
@@ -128,7 +150,7 @@ def generate_recommendation_endpoint(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Generates a new rule-based recommendation."""
+    """Generates a new personalized recommendation based on active Strategy configuration."""
     if current_user.role == UserRole.CHILD:
         child_profile = db.query(ChildProfile).filter(ChildProfile.user_id == current_user.id).first()
         target_child_id = child_profile.id
@@ -150,7 +172,7 @@ def mark_recommendation_viewed(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Marks recommendation as viewed."""
+    """Marks recommendation status as viewed."""
     rec = db.query(Recommendation).filter(Recommendation.id == recommendation_id).first()
     if not rec:
         raise HTTPException(status_code=404, detail="Recommendation not found.")
@@ -167,7 +189,7 @@ def mark_recommendation_completed(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Marks recommendation as completed upon finishing recommended content."""
+    """Marks recommendation status as completed upon finishing recommended activity."""
     rec = db.query(Recommendation).filter(Recommendation.id == recommendation_id).first()
     if not rec:
         raise HTTPException(status_code=404, detail="Recommendation not found.")

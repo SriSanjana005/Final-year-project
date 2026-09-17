@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     MYSQL_PORT: str = os.getenv("MYSQL_PORT", "3306")
     MYSQL_DB: str = os.getenv("MYSQL_DB", "personalized_learning_db")
 
+    # Recommendation System Settings
+    RECOMMENDATION_STRATEGY: str = os.getenv("RECOMMENDATION_STRATEGY", "AUTO")
+    MIN_INTERACTIONS_FOR_AI: int = int(os.getenv("MIN_INTERACTIONS_FOR_AI", "3"))
+
     @property
     def DATABASE_URL(self) -> str:
         return f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DB}"

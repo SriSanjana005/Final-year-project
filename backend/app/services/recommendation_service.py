@@ -1,5 +1,6 @@
+import logging
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 from typing import Optional, List
 from app.models.child import ChildProfile
 from app.models.quiz_attempt import QuizAttempt
@@ -9,32 +10,35 @@ from app.models.topic import Topic
 from app.models.learning_history import LearningHistory
 from app.models.recommendation import Recommendation
 
+logger = logging.getLogger(__name__)
+
 # Configurable recent attempt window size N
 RECENT_ATTEMPTS_N = 3
 
 class RecommendationService:
     @staticmethod
-    def generate_recommendation(db: Session, child_id: int, N: int = RECENT_ATTEMPTS_N) -> Optional[Recommendation]:
+    def generate_recommendation(db: Session, child_id: int) -> Optional[Recommendation]:
         """
-        Generates recommendation using Transformer + PPO DRL strategy when available,
-        falling back to Rule-Based Baseline strategy for cold-start or when DRL checkpoint is absent.
+        Primary entry point for recommendation generation.
+        Delegates to AIRecommendationService which handles Strategy selection (AUTO, TRANSFORMER_PPO, RULE_BASED),
+        cold-start evaluation, and safe fallback.
         """
-        # 1. Try Transformer + PPO DRL Strategy
-        try:
-            from app.services.rl_recommendation_service import RLRecommendationService
-            ppo_rec = RLRecommendationService.generate_ppo_recommendation(db, child_id)
-            if ppo_rec:
-                return ppo_rec
-        except Exception as e:
-            print(f"Notice: Transformer+PPO strategy fallback to Rule-Based: {e}")
+        from app.services.ai_recommendation_service import AIRecommendationService
+        return AIRecommendationService.generate_personalized_recommendation(db, child_id)
 
-        # 2. Fallback: Rule-Based Baseline Strategy
+    @staticmethod
+    def generate_rule_based_recommendation(db: Session, child_id: int, N: int = RECENT_ATTEMPTS_N) -> Optional[Recommendation]:
+        """
+        Rule-Based Baseline Strategy implementation.
+        Evaluates learner's recent quiz performance history by topic and selects appropriate difficulty content.
+        Used for cold-start and fallback scenarios.
+        """
         child = db.query(ChildProfile).filter(ChildProfile.id == child_id).first()
         if not child:
+            logger.warning(f"Child profile #{child_id} not found for rule-based recommendation.")
             return None
 
-
-        # 2. Retrieve child's recent completed quiz attempts
+        # 1. Retrieve recent completed quiz attempts
         attempts = (
             db.query(QuizAttempt)
             .filter(QuizAttempt.child_id == child_id)
@@ -42,11 +46,11 @@ class RecommendationService:
             .all()
         )
 
-        # 3. Handle COLD START scenario if child has no quiz history
+        # 2. COLD START handling if child has no quiz history
         if not attempts:
             return RecommendationService._handle_cold_start(db, child_id)
 
-        # 4. Group recent N attempts by topic to find topic needing attention
+        # 3. Group recent N attempts by topic to identify topic needing attention
         topic_attempts_map = {}
         for att in attempts:
             quiz = db.query(Quiz).filter(Quiz.id == att.quiz_id).first()
@@ -63,11 +67,10 @@ class RecommendationService:
             if len(topic_attempts_map[t_id]["scores"]) < N:
                 topic_attempts_map[t_id]["scores"].append(att.percentage)
 
-
         if not topic_attempts_map:
             return RecommendationService._handle_cold_start(db, child_id)
 
-        # 5. Prioritize topic with lowest recent average score
+        # 4. Prioritize topic with lowest recent average score
         sorted_topics = []
         for t_id, t_info in topic_attempts_map.items():
             avg_score = sum(t_info["scores"]) / len(t_info["scores"])
@@ -78,7 +81,6 @@ class RecommendationService:
                 "latest_attempt_time": t_info["latest_attempt_time"]
             })
 
-        # Sort by avg_score ascending, then by latest_attempt_time descending
         sorted_topics.sort(key=lambda x: (x["avg_score"], -x["latest_attempt_time"].timestamp()))
 
         selected_topic_info = sorted_topics[0]
@@ -86,10 +88,7 @@ class RecommendationService:
         avg_score = selected_topic_info["avg_score"]
         current_difficulty = selected_topic_info["latest_difficulty"]
 
-        # 6. Apply Rule-Based Thresholds
-        target_difficulty = current_difficulty
-        reason = ""
-
+        # 5. Apply Rule-Based Threshold Rules
         if avg_score < 50.0:
             target_difficulty = "easy"
             reason = "Additional practice is recommended based on recent quiz performance."
@@ -97,32 +96,31 @@ class RecommendationService:
             target_difficulty = current_difficulty
             reason = "Continue practicing this topic to strengthen your understanding."
         else:
-            # Score >= 80% -> Recommend higher difficulty if possible
             if current_difficulty == "easy":
                 target_difficulty = "medium"
             elif current_difficulty == "medium":
                 target_difficulty = "hard"
-            else: # hard
+            else:
                 target_difficulty = "hard"
             reason = "Strong recent performance suggests that a higher difficulty level may be appropriate."
 
-        # 7. Content Selection & Repetition Avoidance
+        # 6. Content Selection & Repetition Avoidance
         content = RecommendationService._select_content(db, child_id, topic_id, target_difficulty)
 
         if not content:
-            # Fallback to any published content in the system
             content = (
                 db.query(LearningContent)
                 .filter(LearningContent.is_published == True)
                 .first()
             )
             if not content:
+                logger.error("No published content found in system for rule-based recommendation fallback.")
                 return None
             topic_id = content.topic_id
             target_difficulty = content.difficulty or "easy"
             reason = "Recommended practice content from your curriculum."
 
-        # 8. Store recommendation
+        # 7. Store Rule-Based Recommendation Record
         rec = Recommendation(
             child_id=child_id,
             content_id=content.id,
@@ -136,6 +134,7 @@ class RecommendationService:
         db.add(rec)
         db.commit()
         db.refresh(rec)
+        logger.info(f"Created rule-based recommendation #{rec.id} for child #{child_id}")
         return rec
 
     @staticmethod
@@ -143,8 +142,7 @@ class RecommendationService:
         """Cold-start strategy for learners with no performance history."""
         content = (
             db.query(LearningContent)
-            .filter(LearningContent.is_published == True)
-            .filter(LearningContent.difficulty == "easy")
+            .filter(LearningContent.is_published == True, LearningContent.difficulty == "easy")
             .first()
         )
         if not content:
@@ -169,14 +167,12 @@ class RecommendationService:
         db.add(rec)
         db.commit()
         db.refresh(rec)
+        logger.info(f"Created cold-start recommendation #{rec.id} for child #{child_id}")
         return rec
 
     @staticmethod
     def _select_content(db: Session, child_id: int, topic_id: int, target_difficulty: str) -> Optional[LearningContent]:
-        """
-        Selects published content for topic and difficulty, avoiding completed repetition.
-        """
-        # Fetch published candidate contents for topic and difficulty
+        """Selects published content for topic and difficulty, avoiding completed repetition."""
         candidates = (
             db.query(LearningContent)
             .filter(
@@ -187,7 +183,6 @@ class RecommendationService:
             .all()
         )
 
-        # Fallback if no matching difficulty in topic
         if not candidates:
             candidates = (
                 db.query(LearningContent)
@@ -198,11 +193,9 @@ class RecommendationService:
                 .all()
             )
 
-
         if not candidates:
             return None
 
-        # Retrieve IDs of content completed by child
         completed_histories = (
             db.query(LearningHistory)
             .filter(LearningHistory.child_id == child_id, LearningHistory.activity_type == "lesson")
@@ -210,10 +203,8 @@ class RecommendationService:
         )
         completed_content_ids = {h.activity_id for h in completed_histories}
 
-        # Prefer uncompleted candidates
         uncompleted_candidates = [c for c in candidates if c.id not in completed_content_ids]
         if uncompleted_candidates:
             return uncompleted_candidates[0]
 
-        # Otherwise pick the first candidate (or least recently completed)
         return candidates[0]

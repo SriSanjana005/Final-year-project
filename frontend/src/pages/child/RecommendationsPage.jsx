@@ -68,6 +68,12 @@ export function RecommendationsPage() {
     }
   };
 
+  const formatStrategyName = (type) => {
+    if (!type) return 'Recommendation System';
+    if (type === 'transformer_ppo') return 'Transformer + PPO Engine';
+    return 'Rule-Based Baseline';
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -77,7 +83,7 @@ export function RecommendationsPage() {
               <Sparkles className="text-blue-600" /> Recommended For You
             </h1>
             <p className="text-sm text-slate-500">
-              Personalized learning modules suggested by the <strong>Rule-Based Recommendation Baseline</strong>.
+              Personalized learning modules suggested by your adaptive recommendation engine.
             </p>
           </div>
 
@@ -89,17 +95,17 @@ export function RecommendationsPage() {
             className="gap-2 text-xs font-semibold"
           >
             <RefreshCw size={14} className={generating ? "animate-spin" : ""} />
-            Refresh Recommendation
+            Get New Recommendation
           </Button>
         </div>
 
-        {/* Baseline System Rationale Banner */}
+        {/* System Rationale Banner */}
         <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 space-y-2">
           <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
-            <Info size={16} /> Rule-Based Baseline Engine Rationale
+            <Info size={16} /> Recommendation Engine Overview
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            This recommendation baseline analyzes your recent quiz scores ($N=3$ window). Scores under 50% trigger easy review modules, scores between 50% and 80% maintain current difficulty, and scores above 80% recommend higher difficulty modules.
+            Our personalized recommendation system analyzes your interaction sequence and performance history to guide your learning path. When history is available, AI policy recommendations are selected; otherwise, clean rule-based baseline recommendations ensure steady progress.
           </p>
         </div>
 
@@ -115,18 +121,18 @@ export function RecommendationsPage() {
                 <CardHeader>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                      ★ Primary Recommended Module
+                      ★ Active Recommendation
                     </span>
                     {getDifficultyBadge(currentRec.difficulty)}
                   </div>
                   <CardTitle className="text-xl text-slate-900">{currentRec.content_title}</CardTitle>
                   <CardDescription className="text-xs font-semibold text-slate-600">
-                    Topic: {currentRec.topic_name || 'General'} | Engine: <span className="capitalize">{currentRec.recommendation_type.replace('_', ' ')} Baseline</span>
+                    Topic: {currentRec.topic_name || 'General'} | Engine: <span className="capitalize">{formatStrategyName(currentRec.recommendation_type)}</span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-4 bg-white border border-blue-100 rounded-xl text-xs space-y-1 text-slate-700 shadow-2xs">
-                    <span className="font-bold text-slate-900">Recommendation Reason:</span>
+                    <span className="font-bold text-slate-900">Why this was recommended:</span>
                     <p className="text-slate-600">{currentRec.reason}</p>
                   </div>
 
@@ -159,6 +165,9 @@ export function RecommendationsPage() {
                           </Badge>
                         </div>
                         <CardTitle className="text-base">{rec.content_title}</CardTitle>
+                        <CardDescription className="text-[11px] text-slate-400">
+                          {formatStrategyName(rec.recommendation_type)}
+                        </CardDescription>
                       </CardHeader>
                       <CardContent className="p-4 pt-0 space-y-3">
                         <p className="text-xs text-slate-600 line-clamp-2">{rec.reason}</p>
@@ -182,4 +191,3 @@ export function RecommendationsPage() {
     </AppLayout>
   );
 }
-

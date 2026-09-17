@@ -3,42 +3,9 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.database import Base
 from app.models.user import User, UserRole
-
-class ChildProfile(Base):
-    __tablename__ = "child_profiles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
-    age = Column(Integer, nullable=True)
-    learning_level = Column(String(50), default="beginner")
-    notes = Column(Text, nullable=True)
-
-    user = relationship("User", back_populates="child_profile")
-    parent_links = relationship("ParentChild", back_populates="child")
-    quiz_attempts = relationship("QuizAttempt", back_populates="child")
-    learning_histories = relationship("LearningHistory", back_populates="child")
-    recommendations = relationship("Recommendation", back_populates="child")
-
-class ParentProfile(Base):
-    __tablename__ = "parent_profiles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
-    phone_number = Column(String(50), nullable=True)
-
-    user = relationship("User", back_populates="parent_profile")
-    children_links = relationship("ParentChild", back_populates="parent")
-
-class ParentChild(Base):
-    __tablename__ = "parent_child_mappings"
-
-    id = Column(Integer, primary_key=True, index=True)
-    parent_id = Column(Integer, ForeignKey("parent_profiles.id"), nullable=False)
-    child_id = Column(Integer, ForeignKey("child_profiles.id"), nullable=False)
-    relationship_type = Column(String(50), default="parent")
-
-    parent = relationship("ParentProfile", back_populates="children_links")
-    child = relationship("ChildProfile", back_populates="parent_links")
+from app.models.child import ChildProfile
+from app.models.parent import ParentProfile
+from app.models.parent_child import ParentChild
 
 class Topic(Base):
     __tablename__ = "topics"
@@ -99,7 +66,7 @@ class QuizAttempt(Base):
     __tablename__ = "quiz_attempts"
 
     id = Column(Integer, primary_key=True, index=True)
-    child_id = Column(Integer, ForeignKey("child_profiles.id"), nullable=False)
+    child_id = Column(Integer, ForeignKey("child_profiles.id", ondelete="CASCADE"), nullable=False)
     quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
     score = Column(Float, nullable=False)
     total_questions = Column(Integer, nullable=False)
@@ -114,7 +81,7 @@ class LearningHistory(Base):
     __tablename__ = "learning_histories"
 
     id = Column(Integer, primary_key=True, index=True)
-    child_id = Column(Integer, ForeignKey("child_profiles.id"), nullable=False)
+    child_id = Column(Integer, ForeignKey("child_profiles.id", ondelete="CASCADE"), nullable=False)
     content_id = Column(Integer, ForeignKey("learning_contents.id"), nullable=True)
     topic_title = Column(String(255), nullable=False)
     difficulty_level = Column(Integer, default=1)
@@ -130,7 +97,7 @@ class Recommendation(Base):
     __tablename__ = "recommendations"
 
     id = Column(Integer, primary_key=True, index=True)
-    child_id = Column(Integer, ForeignKey("child_profiles.id"), nullable=False)
+    child_id = Column(Integer, ForeignKey("child_profiles.id", ondelete="CASCADE"), nullable=False)
     content_id = Column(Integer, ForeignKey("learning_contents.id"), nullable=False)
     recommended_by = Column(String(50), default="RuleEngine/Placeholder")
     action_type = Column(String(50), default="same_difficulty")

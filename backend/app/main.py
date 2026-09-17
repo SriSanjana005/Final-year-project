@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.database import engine, Base
-from app.routers import health, auth, users, topics, recommendations
+from app.routers import health, auth, users, topics, recommendations, user_profile, parent_child
 
 # Create tables if database is available
 try:
     Base.metadata.create_all(bind=engine)
 except Exception as e:
-    print(f"Database initialization warning (MySQL connection may not be configured yet): {e}")
+    print(f"Database initialization warning: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -37,6 +37,8 @@ app.add_middleware(
 # Include Routers
 app.include_router(health.router, prefix=settings.API_V1_STR)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(user_profile.router, prefix=settings.API_V1_STR)
+app.include_router(parent_child.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(topics.router, prefix=settings.API_V1_STR)
 app.include_router(recommendations.router, prefix=settings.API_V1_STR)

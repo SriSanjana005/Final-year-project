@@ -5,10 +5,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../..
 import { Button } from '../../components/ui/button';
 import { Progress } from '../../components/ui/progress';
 import { Badge } from '../../components/ui/badge';
+import { useAuth } from '../../context/AuthContext';
 import { Play, Sparkles, Award, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export function ChildDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <AppLayout>
@@ -18,7 +20,7 @@ export function ChildDashboard() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-2">
               <span className="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full inline-block">
-                Welcome back, Leo! 👋
+                Welcome back, {user?.name || 'Learner'}! 👋
               </span>
               <h1 className="text-2xl md:text-3xl font-bold">Ready to continue your learning adventure?</h1>
               <p className="text-blue-100 text-sm">You are doing great! You have completed 3 activities this week.</p>
@@ -34,9 +36,8 @@ export function ChildDashboard() {
           </div>
         </div>
 
-        {/* Action Cards: Continue Learning & Recommended */}
+        {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Continue Learning */}
           <Card className="border-l-4 border-l-[#2563EB]">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -65,7 +66,6 @@ export function ChildDashboard() {
             </CardContent>
           </Card>
 
-          {/* Recommended For You */}
           <Card className="border-l-4 border-l-[#14B8A6] bg-teal-50/20">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -79,7 +79,7 @@ export function ChildDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-xs text-slate-600 bg-white p-3 rounded-lg border border-slate-200">
-                💡 <strong>Why this was recommended:</strong> Your historical interaction sequence shows high retention when matching words with tactile pictures.
+                💡 <strong>Why this was recommended:</strong> Historical interaction sequence shows high retention when matching words with tactile pictures.
               </p>
               <Button 
                 variant="success" 
@@ -95,7 +95,6 @@ export function ChildDashboard() {
 
         {/* Recent Performance & Learning Activity */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Recent Quiz Scores */}
           <Card className="md:col-span-1">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
@@ -119,7 +118,6 @@ export function ChildDashboard() {
             </CardContent>
           </Card>
 
-          {/* Recent Learning Activity List */}
           <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="text-base">Recent Learning Activity</CardTitle>

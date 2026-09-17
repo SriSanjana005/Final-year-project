@@ -1,24 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
+import { userService } from '../../services/userService';
 import { Users, FolderKanban, FileText, HelpCircle, Network, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const [metrics, setMetrics] = useState({
+    total_users: 0,
+    total_children: 0,
+    total_parents: 0,
+    total_mappings: 0
+  });
+  const [loading, setLoading] = useState(true);
 
-  const metrics = [
-    { title: "Total Users", count: "14", icon: Users, color: "text-blue-600 bg-blue-50" },
-    { title: "Total Children", count: "8", icon: Users, color: "text-teal-600 bg-teal-50" },
-    { title: "Total Parents", count: "5", icon: Users, color: "text-indigo-600 bg-indigo-50" },
-    { title: "Approved Content", count: "24", icon: FileText, color: "text-purple-600 bg-purple-50" },
-    { title: "Total Quizzes", count: "12", icon: HelpCircle, color: "text-amber-600 bg-amber-50" },
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const data = await userService.getAdminMetrics();
+        setMetrics(data);
+      } catch (err) {
+        console.error("Failed to fetch admin metrics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMetrics();
+  }, []);
+
+  const metricCards = [
+    { title: "Total Users", count: metrics.total_users, icon: Users, color: "text-blue-600 bg-blue-50" },
+    { title: "Total Children", count: metrics.total_children, icon: Users, color: "text-teal-600 bg-teal-50" },
+    { title: "Total Parents", count: metrics.total_parents, icon: Users, color: "text-indigo-600 bg-indigo-50" },
+    { title: "Parent-Child Links", count: metrics.total_mappings, icon: Network, color: "text-purple-600 bg-purple-50" },
   ];
 
   const adminNav = [
     { label: "User Management", path: "/admin/users", icon: Users },
-    { label: "Parent-Child Mapping", path: "/admin/mapping", icon: Network },
+    { label: "Parent-Child Links", path: "/admin/mapping", icon: Network },
     { label: "Topic Management", path: "/admin/topics", icon: FolderKanban },
     { label: "Content Management", path: "/admin/content", icon: FileText },
     { label: "Quiz Management", path: "/admin/quizzes", icon: HelpCircle },
@@ -36,8 +56,8 @@ export function AdminDashboard() {
         </div>
 
         {/* System Metric Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {metrics.map((m, i) => {
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {metricCards.map((m, i) => {
             const Icon = m.icon;
             return (
               <Card key={i} className="p-4 space-y-2">
@@ -46,7 +66,7 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <p className="text-[11px] text-slate-500 font-semibold uppercase">{m.title}</p>
-                  <p className="text-2xl font-extrabold text-slate-900">{m.count}</p>
+                  <p className="text-2xl font-extrabold text-slate-900">{loading ? "..." : m.count}</p>
                 </div>
               </Card>
             );
@@ -84,12 +104,12 @@ export function AdminDashboard() {
           <CardContent>
             <div className="space-y-3 text-xs">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <span>Created new approved content item: <strong>"Visual Block Addition"</strong></span>
-                <span className="text-slate-400">1 hour ago</span>
+                <span>Database relational integrity verified: <strong>{metrics.total_users} Users registered</strong></span>
+                <span className="text-slate-400">Live</span>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
-                <span>Mapped Parent <strong>Sarah Smith</strong> to Child <strong>Leo Smith</strong></span>
-                <span className="text-slate-400">Yesterday</span>
+                <span>Parent-Child Relationship Mappings count: <strong>{metrics.total_mappings} active mappings</strong></span>
+                <span className="text-slate-400">Live</span>
               </div>
             </div>
           </CardContent>

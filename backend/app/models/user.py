@@ -19,6 +19,7 @@ class User(Base):
     role = Column(SQLEnum(UserRole), nullable=False, default=UserRole.CHILD)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     child_profile = relationship("ChildProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     parent_profile = relationship("ParentProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")

@@ -50,6 +50,8 @@ export default function App() {
           <Route path="/child/learning" element={<ProtectedRoute allowedRoles={['child']}><LearningContentPage /></ProtectedRoute>} />
           <Route path="/child/learning/:contentId" element={<ProtectedRoute allowedRoles={['child']}><ContentDetailPage /></ProtectedRoute>} />
           <Route path="/child/quiz" element={<ProtectedRoute allowedRoles={['child']}><QuizPage /></ProtectedRoute>} />
+          <Route path="/child/quiz/:quizId" element={<ProtectedRoute allowedRoles={['child']}><QuizPage /></ProtectedRoute>} />
+          <Route path="/child/quiz/:quizId/result/:attemptId" element={<ProtectedRoute allowedRoles={['child']}><QuizResultPage /></ProtectedRoute>} />
           <Route path="/child/quiz-result" element={<ProtectedRoute allowedRoles={['child']}><QuizResultPage /></ProtectedRoute>} />
           <Route path="/child/result" element={<ProtectedRoute allowedRoles={['child']}><QuizResultPage /></ProtectedRoute>} />
           <Route path="/child/progress" element={<ProtectedRoute allowedRoles={['child']}><ProgressPage /></ProtectedRoute>} />

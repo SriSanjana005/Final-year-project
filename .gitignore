@@ -19,3 +19,9 @@ frontend/.env.local
 
 # Databases / Fallbacks
 *.db
+
+# ML Model Checkpoints
+ml/models/*.pt
+ml/models/*.pth
+ml/models/*.bin
+

@@ -3,7 +3,8 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { recommendationService } from '../../services/recommendationService';
-import { Sparkles, Loader2, Calendar, User, BookOpen } from 'lucide-react';
+import { Sparkles, Loader2, Calendar, User, BookOpen, Cpu } from 'lucide-react';
+
 
 export function RecommendationMonitoringPage() {
   const [recommendations, setRecommendations] = useState([]);
@@ -50,6 +51,31 @@ export function RecommendationMonitoringPage() {
             System audit log of generated <strong>Rule-Based Recommendations</strong> across all learners.
           </p>
         </div>
+
+        <div className="bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 space-y-3 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
+            <Cpu size={16} /> PyTorch Transformer Learner Representation Pipeline
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs pt-1">
+            <div className="p-3 bg-slate-800 rounded-xl border border-slate-700">
+              <span className="text-slate-400 font-medium">Embedding Dimension</span>
+              <p className="text-base font-extrabold text-blue-400 mt-0.5">64-D Vector</p>
+            </div>
+            <div className="p-3 bg-slate-800 rounded-xl border border-slate-700">
+              <span className="text-slate-400 font-medium">Sequence Window (N)</span>
+              <p className="text-base font-extrabold text-teal-400 mt-0.5">20 Timesteps</p>
+            </div>
+            <div className="p-3 bg-slate-800 rounded-xl border border-slate-700">
+              <span className="text-slate-400 font-medium">Transformer Encoder</span>
+              <p className="text-base font-extrabold text-indigo-400 mt-0.5">2 Layers, 4 Heads</p>
+            </div>
+            <div className="p-3 bg-slate-800 rounded-xl border border-slate-700">
+              <span className="text-slate-400 font-medium">Cold-Start Strategy</span>
+              <p className="text-base font-extrabold text-amber-400 mt-0.5">Rule-Based Fallback</p>
+            </div>
+          </div>
+        </div>
+
 
         <Card>
           <CardHeader>

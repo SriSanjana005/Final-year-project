@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.database import engine, Base
-from app.routers import health, auth, users, topics, recommendations, user_profile, parent_child, content, quizzes, progress
+from app.routers import health, auth, users, topics, recommendations, user_profile, parent_child, content, quizzes, progress, ml
 
 # Create tables if database is available
 try:
@@ -45,6 +45,8 @@ app.include_router(content.router, prefix=settings.API_V1_STR)
 app.include_router(quizzes.router, prefix=settings.API_V1_STR)
 app.include_router(progress.router, prefix=settings.API_V1_STR)
 app.include_router(recommendations.router, prefix=settings.API_V1_STR)
+app.include_router(ml.router, prefix=settings.API_V1_STR)
+
 
 @app.get("/")
 def root():

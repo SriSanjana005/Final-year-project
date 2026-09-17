@@ -1,6 +1,6 @@
 {
   "evaluation_status": "evaluated",
-  "timestamp": 1789673167.359778,
+  "timestamp": 1789673651.476395,
   "test_samples": 1,
   "metrics": {
     "accuracy": 1.0,
@@ -15,13 +15,13 @@
       ],
       [
         0,
-        0,
+        1,
         0
       ],
       [
         0,
         0,
-        1
+        0
       ]
     ]
   },

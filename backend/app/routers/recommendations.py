@@ -233,3 +233,26 @@ def get_all_recommendations_admin(
             "generated_at": r.generated_at
         })
     return results
+
+@router.get("/admin/evaluation/summary")
+def get_admin_evaluation_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Admin-only endpoint returning experimental evaluation summary,
+    baseline vs proposed strategy comparison, content safety audit, and model metrics.
+    """
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Admin authorization required.")
+
+    try:
+        from ml.evaluation.evaluator import run_evaluation_pipeline
+        summary = run_evaluation_pipeline(db)
+        return summary
+    except Exception as e:
+        print(f"Evaluation summary pipeline notice: {e}")
+        return {
+            "evaluation_status": "insufficient_data",
+            "message": str(e)
+        }

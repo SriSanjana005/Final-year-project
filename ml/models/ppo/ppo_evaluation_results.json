@@ -1,12 +1,12 @@
 {
   "evaluation_status": "evaluated",
-  "timestamp": 1789673194.5303347,
-  "episodes_evaluated": 50,
+  "timestamp": 1789673652.9285483,
+  "episodes_evaluated": 2,
   "mean_episode_reward": 7.3,
   "std_episode_reward": 0.0,
   "action_distribution": {
-    "REVIEW_PREVIOUS_TOPIC": 1.0,
-    "EASIER_CONTENT": 0.0,
+    "REVIEW_PREVIOUS_TOPIC": 0.0,
+    "EASIER_CONTENT": 1.0,
     "SAME_DIFFICULTY": 0.0,
     "HARDER_CONTENT": 0.0,
     "PRACTICE_CONTENT": 0.0

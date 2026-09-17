@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, BookOpen, HelpCircle, TrendingUp, 
   Sparkles, History, User, Users, FolderKanban, 
-  FileText, HelpCircle as QuestionIcon, Network, Cpu
+  FileText, HelpCircle as QuestionIcon, Network, Cpu, BarChart2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -38,6 +38,7 @@ export function Sidebar() {
     { to: '/admin/quizzes', label: 'Quiz Management', icon: HelpCircle },
     { to: '/admin/questions', label: 'Question Bank', icon: QuestionIcon },
     { to: '/admin/recommendations', label: 'Recommendations Baseline', icon: Sparkles },
+    { to: '/admin/evaluation', label: 'Evaluation & Comparison', icon: BarChart2 },
   ];
 
   const links = role === 'admin' ? adminLinks : role === 'parent' ? parentLinks : childLinks;

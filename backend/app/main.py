@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.db.database import engine, Base
+from app.db.database import engine, Base, ensure_schema_migrations
 from app.routers import health, auth, users, topics, recommendations, user_profile, parent_child, content, quizzes, progress, ml
 
-# Create tables if database is available
+# Create tables and ensure dynamic schema migrations if database exists
 try:
     Base.metadata.create_all(bind=engine)
+    ensure_schema_migrations(engine)
 except Exception as e:
     print(f"Database initialization warning: {e}")
 
